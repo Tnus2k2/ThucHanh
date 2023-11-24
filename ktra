@@ -1,0 +1,70 @@
+from sympy import Symbol, diff, integrate, sin, exp, oo, limit, solve, cos
+import tkinter as tk
+from tkinter import ttk
+
+class SymbolicMathApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Symbolic Mathematics Program")
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Symbol Entry
+        symbol_label = ttk.Label(self.root, text="Enter the symbol (e.g., 'x'): ")
+        symbol_label.grid(row=0, column=0, sticky=tk.W, padx=10, pady=5)
+        self.symbol_entry = ttk.Entry(self.root)
+        self.symbol_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        # Expression Entry
+        expression_label = ttk.Label(self.root, text="Enter the expression: ")
+        expression_label.grid(row=1, column=0, sticky=tk.W, padx=10, pady=5)
+        self.expression_entry = ttk.Entry(self.root)
+        self.expression_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        # Operation Selection
+        operation_label = ttk.Label(self.root, text="Select operation:")
+        operation_label.grid(row=2, column=0, sticky=tk.W, padx=10, pady=5)
+        self.operation_combobox = ttk.Combobox(self.root, values=["Differentiate", "Integrate", "Definite Integrate", "Limit", "Solve Equation"])
+        self.operation_combobox.grid(row=2, column=1, padx=10, pady=5)
+
+        # Result Display
+        result_label = ttk.Label(self.root, text="Result:")
+        result_label.grid(row=3, column=0, sticky=tk.W, padx=10, pady=5)
+        self.result_text = tk.Text(self.root, height=4, width=50)
+        self.result_text.grid(row=3, column=1, padx=10, pady=5)
+
+        # Calculate Button
+        calculate_button = ttk.Button(self.root, text="Calculate", command=self.calculate)
+        calculate_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+    def calculate(self):
+        symbol_name = self.symbol_entry.get()
+        x = Symbol(symbol_name)
+        expression = self.expression_entry.get()
+
+        operation = self.operation_combobox.get()
+
+        if operation == "Differentiate":
+            result = diff(expression, x)
+        elif operation == "Integrate":
+            result = integrate(expression, x)
+        elif operation == "Definite Integrate":
+            lower_limit = float(input("Enter the lower limit: "))
+            upper_limit = float(input("Enter the upper limit: "))
+            result = integrate(expression, (x, lower_limit, upper_limit))
+        elif operation == "Limit":
+            point = float(input("Enter the point of the limit: "))
+            result = limit(expression, x, point)
+        elif operation == "Solve Equation":
+            result = solve(expression, x)
+        else:
+            result = "Invalid operation selected."
+
+        self.result_text.delete(1.0, tk.END)  # Clear previous result
+        self.result_text.insert(tk.END, str(result))
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = SymbolicMathApp(root)
+    root.mainloop()
