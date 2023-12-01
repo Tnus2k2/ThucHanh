@@ -1,0 +1,68 @@
+from sympy import Symbol, diff, integrate, sin, exp, oo, limit, solve, cos
+import tkinter as tk
+from tkinter import ttk
+
+class ChươngTrìnhToánHọcBiểuThức:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Chương Trình Toán Học Biểu Thức")
+        self.tạo_giao_diện()
+
+    def tạo_giao_diện(self):
+        # Nhập Ký Hiệu
+        nhãn_ký_hiệu = ttk.Label(self.root, text="Nhập ký hiệu biểu thức (ví dụ: 'x'): ")
+        nhãn_ký_hiệu.grid(row=0, column=0, sticky=tk.W, padx=10, pady=5)
+        self.ô_nhập_ký_hiệu = ttk.Entry(self.root)
+        self.ô_nhập_ký_hiệu.grid(row=0, column=1, padx=10, pady=5)
+
+        # Nhập Biểu Thức
+        nhãn_biểu_thức = ttk.Label(self.root, text="Nhập biểu thức toán học: ")
+        nhãn_biểu_thức.grid(row=1, column=0, sticky=tk.W, padx=10, pady=5)
+        self.ô_nhập_biểu_thức = ttk.Entry(self.root)
+        self.ô_nhập_biểu_thức.grid(row=1, column=1, padx=10, pady=5)
+
+        # Lựa Chọn Phép Toán
+        nhãn_phép_toán = ttk.Label(self.root, text="Chọn phép toán:")
+        nhãn_phép_toán.grid(row=2, column=0, sticky=tk.W, padx=10, pady=5)
+        self.combobox_phép_toán = ttk.Combobox(self.root, values=["Đạo Hàm", "Tích Phân", "Tích Phân Xác Định", "Giới Hạn", "Giải Phương Trình"])
+        self.combobox_phép_toán.grid(row=2, column=1, padx=10, pady=5)
+
+        # Kết Quả
+        nhãn_kết_quả = ttk.Label(self.root, text="Kết quả:")
+        nhãn_kết_quả.grid(row=3, column=0, sticky=tk.W, padx=10, pady=5)
+        self.vùng_hiển_thị_kết_quả = tk.Text(self.root, height=4, width=50)
+        self.vùng_hiển_thị_kết_quả.grid(row=3, column=1, padx=10, pady=5)
+
+        # Nút Tính Toán
+        nút_tính_toán = ttk.Button(self.root, text="Tính Toán", command=self.tính_toán)
+        nút_tính_toán.grid(row=4, column=0, columnspan=2, pady=10)
+
+    def tính_toán(self):
+        ký_hiệu = self.ô_nhập_ký_hiệu.get()
+        x = Symbol(ký_hiệu)
+        biểu_thức = self.ô_nhập_biểu_thức.get()
+        phép_toán = self.combobox_phép_toán.get()
+
+        if phép_toán == "Đạo Hàm":
+            kết_quả = diff(biểu_thức, x)
+        elif phép_toán == "Tích Phân":
+            kết_quả = integrate(biểu_thức, x)
+        elif phép_toán == "Tích Phân Xác Định":
+            giới_hạn_dưới = float(input("Nhập giới hạn dưới: "))
+            giới_hạn_trên = float(input("Nhập giới hạn trên: "))
+            kết_quả = integrate(biểu_thức, (x, giới_hạn_dưới, giới_hạn_trên))
+        elif phép_toán == "Giới Hạn":
+            điểm_tiếp_cận = float(input("Nhập điểm tiếp cận: "))
+            kết_quả = limit(biểu_thức, x, điểm_tiếp_cận)
+        elif phép_toán == "Giải Phương Trình":
+            kết_quả = solve(biểu_thức, x)
+        else:
+            kết_quả = "Lựa chọn phép toán không hợp lệ."
+
+        self.vùng_hiển_thị_kết_quả.delete(1.0, tk.END)  # Xóa kết quả trước đó
+        self.vùng_hiển_thị_kết_quả.insert(tk.END, str(kết_quả))
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ChươngTrìnhToánHọcBiểuThức(root)
+    root.mainloop()
