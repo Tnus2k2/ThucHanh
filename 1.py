@@ -142,7 +142,7 @@ class NhậpMaTrận:
 
     def hiển_thị_menu(self):
         khung_menu = tk.Toplevel(self.chủ)
-        khung_menu.geometry("400x400")
+        khung_menu.geometry("400x300")
         khung_menu.title("Các Phép Toán Trên Ma Trận")
         phép_toán_ma_trận = [
             ("Tìm phần tử lớn nhất trong ma trận", self.ma_trận.max),
@@ -158,26 +158,9 @@ class NhậpMaTrận:
             nút_lựa_chọn = tk.Button(khung_menu, text=f"{i}. {lựa_chọn}", command=lambda f=hàm: self.hiển_thị_kết_quả(f))
             nút_lựa_chọn.pack(pady=5)
 
-        nút_lưu_kết_quả = tk.Button(khung_menu, text="Lưu Kết Quả", command=self.lưu_kết_quả)
-        nút_lưu_kết_quả.pack(pady=5)
-
         nút_thoát = tk.Button(khung_menu, text="Thoát", command=khung_menu.destroy)
         nút_thoát.pack(pady=5)
 
-
-
-    def lưu_kết_quả(self):
-        if self.ma_trận is not None:
-            # Mở hộp thoại để chọn vị trí và tên file
-            file_path = filedialog.asksaveasfilename(defaultextension=".txt",
-                                                     filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-
-            # Nếu người dùng chọn một file, lưu kết quả vào file
-            if file_path:
-                np.savetxt(file_path, self.ma_trận, fmt="%d")
-                messagebox.showinfo("Thông Báo", "Kết quả đã được lưu thành công.")
-        else:
-            messagebox.showwarning("Cảnh Báo", "Chưa có ma trận để lưu. Vui lòng nhập ma trận trước.")
     def hiển_thị_kết_quả(self, hàm):
         kết_quả = hàm()
 
