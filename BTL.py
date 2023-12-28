@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, simpledialog, Tk, Label, Entry, Button
 import pandas as pd
-from random import sample, shuffle, random
+import random
 from PIL import Image, ImageTk
+
 
 class APP:
     def __init__(self, master):
@@ -96,6 +97,7 @@ class Dang_ky_GV:
     def goto_login(self):
         self.hide_page()
         login = Dang_nhap(self.master)
+
 
 class Dang_nhap:
     def __init__(self, master):
@@ -261,6 +263,7 @@ class Dang_Nhap_SV:
         self.hide_page()
         login = Dang_nhap(self.master)
 
+
 class StudentAccount:
     def __init__(self, username, msv, ma_lop, ma_de):
         self.username = username
@@ -329,7 +332,6 @@ class Teacher:
                 # Hiển thị thông báo khi danh sách sinh viên được thêm thành công
                 messagebox.showinfo("Thông Báo", "Thêm Danh Sách Sinh Viên từ file CSV thành công!")
 
-
                 for index, row in df_sv.iterrows():
                     username = row['Ho_Ten']
                     msv = row['Ma_Sinh_Vien']
@@ -370,7 +372,7 @@ class Teacher:
                 de_thi = DeThi(ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung)
                 self.exam_list.append(de_thi)
             messagebox.showinfo("Thông báo", "Đã tải danh sách đề thi thành công.")
-            print(self.exam_list)
+            # print(self.exam_list)
         except FileNotFoundError:
             messagebox.showerror("Lỗi", "File DE.csv không tồn tại.")
         except Exception as e:
@@ -403,16 +405,18 @@ class Teacher:
 
 
 class Student:
-
     def __init__(self, master, ho_ten, ma_sinh_vien, ma_lop, ma_de):
+        self.master = master
         self.ho_ten = ho_ten
         self.ma_sinh_vien = ma_sinh_vien
         self.ma_lop = ma_lop
         self.ma_de = ma_de
-        self.master = master
         self.master.title("Trang Sinh Viên")
         self.ds_de_thi = []
-        # Thay đổi tên biến để tránh xung đột với tên của đối tượng
+        self.de_thi_chon = None
+        self.var = tk.StringVar()
+        self.cau_hoi_hien_tai = 0
+
         self.btn_chon_de_thi = tk.Button(master, text="Chọn File Đề", command=self.load_ds_de_thi)
         self.btn_chon_de_thi.pack(pady=10)
 
@@ -423,7 +427,7 @@ class Student:
         try:
             # Đọc thông tin đề từ file CSV
             df_de_thi = pd.read_csv("DE.csv", encoding='latin-1', engine='python')
-            ma_de_value = self.ma_de
+            ma_de_value = "O"  # Thay đổi mã đề tùy vào yêu cầu của bạn
             # Lọc các câu hỏi có mã đề trùng với mã đề của sinh viên
             df_de_thi_sv = df_de_thi[df_de_thi['Ma_De'] == ma_de_value]
             # Lặp qua từng dòng trong DataFrame và thêm vào danh sách đề
@@ -440,62 +444,71 @@ class Student:
 
                 de_thi = DeThi(ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung)
                 self.ds_de_thi.append(de_thi)
-            print(self.ds_de_thi)
             messagebox.showinfo("Thông báo", "Đã tải danh sách đề thi thành công.")
-            print(self.ds_de_thi)
         except FileNotFoundError:
             messagebox.showerror("Lỗi", "File DE.csv không tồn tại.")
         except Exception as e:
             messagebox.showerror("Lỗi", f"Có lỗi xảy ra khi đọc file DE.csv: {e}")
-
 
     def lam_bai(self):
         if not self.ds_de_thi:
             messagebox.showwarning("Cảnh báo", "Không có đề thi nào để làm.")
             return
 
-        # Chọn ngẫu nhiên một đề thi từ danh sách
         de_thi_chon = random.choice(self.ds_de_thi)
+        self.hien_thi_cau_hoi(0, de_thi_chon)
 
-        # Tạo một cửa sổ mới để hiển thị đề và câu hỏi
+    def hien_thi_cau_hoi(self, cau_hoi_hien_tai, de_thi_chon):
         cua_so_bai_thi = tk.Toplevel(self.master)
         cua_so_bai_thi.title("Làm Trắc Nghiệm")
+        cua_so_bai_thi.geometry("400x400")  # Set the size of the window
 
-        # Hiển thị tên đề và số điểm hiện tại
         tk.Label(cua_so_bai_thi, text=f"Đề: {de_thi_chon.ten_de}").pack()
-        label_diem = tk.Label(cua_so_bai_thi, text="Điểm hiện tại: 0")
-        label_diem.pack()
 
-        # Lưu điểm
         diem = 0
 
-        # Lặp qua tất cả 10 câu hỏi
-        for i in range(10):
-            # Hiển thị câu hỏi
-            tk.Label(cua_so_bai_thi, text=f"Câu {i + 1}: {de_thi_chon.cau_hoi[i]}").pack()
+        tk.Label(cua_so_bai_thi, text=f"Câu {cau_hoi_hien_tai + 1}: {de_thi_chon.cau_hoi}").pack()
 
-            # Tạo radio buttons cho các đáp án
-            var = tk.StringVar()
-            for j, dap_an in enumerate(de_thi_chon.dap_an[i]):
-                tk.Radiobutton(cua_so_bai_thi, text=dap_an, variable=var, value=j).pack()
+        # Create a list of StringVar variables for each question
+        vars_list = [tk.StringVar() for _ in range(4)]
 
-            # Tạo nút để xác nhận và kiểm tra đáp án
-            btn_xac_nhan = tk.Button(cua_so_bai_thi, text="Xác Nhận",
-                                     command=lambda i=i, var=var: self.kiem_tra_dap_an(i, var, de_thi_chon,
-                                                                                       cua_so_bai_thi, diem, label_diem,
-                                                                                       btn_xac_nhan, btn_tiep_theo,
-                                                                                       btn_hoan_thanh))
-            btn_xac_nhan.pack()
+        for j, dap_an in enumerate(de_thi_chon.dap_an):
+            radiobutton = tk.Radiobutton(cua_so_bai_thi, text=dap_an, variable=vars_list[j], value=j)
+            radiobutton.pack()
 
-        # Tạo nút để chuyển sang câu hỏi tiếp theo
-        btn_tiep_theo = tk.Button(cua_so_bai_thi, text="Câu Tiếp Theo",
-                                  command=lambda: self.cau_hoi_tiep_theo(btn_tiep_theo, btn_hoan_thanh, cua_so_bai_thi))
-        btn_tiep_theo.pack_forget()
+        btn_xac_nhan = tk.Button(cua_so_bai_thi, text="Xác Nhận",
+                                 command=lambda: self.kiem_tra_dap_an(cau_hoi_hien_tai, vars_list, de_thi_chon,
+                                                                       cua_so_bai_thi, diem))
+        btn_xac_nhan.pack()
 
-        # Tạo nút để hoàn thành bài thi
-        btn_hoan_thanh = tk.Button(cua_so_bai_thi, text="Hoàn Thành",
-                                   command=lambda: self.ket_thuc_bai_thi(btn_hoan_thanh, cua_so_bai_thi, diem))
-        btn_hoan_thanh.pack_forget()
+        if cau_hoi_hien_tai < 8:  # Hide "Câu Tiếp Theo" button for the last question
+            btn_tiep_theo = tk.Button(cua_so_bai_thi, text="Câu Tiếp Theo",
+                                      command=lambda: self.hien_thi_cau_hoi(cau_hoi_hien_tai + 1, de_thi_chon))
+            btn_tiep_theo.pack()
+
+    def kiem_tra_dap_an(self, cau_hoi_hien_tai, vars_list, de_thi_chon, cua_so_bai_thi, diem):
+        if 0 <= cau_hoi_hien_tai < len(de_thi_chon.dap_an_dung):
+            dap_an_dung = de_thi_chon.dap_an_dung[cau_hoi_hien_tai]
+        else:
+            dap_an_dung = None
+        dap_an_nguoi_dung_str = vars_list[0].get()
+        if dap_an_nguoi_dung_str.isdigit():
+            dap_an_nguoi_dung = vars_list[int(dap_an_nguoi_dung_str)].get()
+        else:
+        # Xử lý khi giá trị không phải là số
+            dap_an_nguoi_dung = None
+
+        if dap_an_nguoi_dung is not None and dap_an_nguoi_dung == dap_an_dung:
+            diem += 1
+
+        if cau_hoi_hien_tai < 8:  # Move to the next question
+            cua_so_bai_thi.destroy()
+            self.hien_thi_cau_hoi(cau_hoi_hien_tai + 1, de_thi_chon)
+        else:
+            # Display the final score
+            messagebox.showinfo("Kết Thúc", f"Điểm của bạn: {diem}")
+            cua_so_bai_thi.destroy()
+
 class DeThi:
     def __init__(self, ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung):
         self.ma_de = ma_de
@@ -507,8 +520,13 @@ class DeThi:
         self.dap_an_D = dap_an_D
         self.dap_an_dung = [d for d in dap_an_dung]
 
+        self.dap_an = [dap_an_A, dap_an_B, dap_an_C, dap_an_D]
+
+
 def update_score():
     pass
+
+
 def main():
     root = tk.Tk()
     login_page = Dang_nhap(root)
