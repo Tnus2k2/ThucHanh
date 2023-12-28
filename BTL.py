@@ -455,10 +455,10 @@ class Student:
             messagebox.showwarning("Cảnh báo", "Không có đề thi nào để làm.")
             return
 
-        de_thi_chon = random.choice(self.ds_de_thi)
-        self.hien_thi_cau_hoi(0, de_thi_chon)
+        self.hien_thi_cau_hoi()
 
-    def hien_thi_cau_hoi(self, cau_hoi_hien_tai, de_thi_chon):
+    def hien_thi_cau_hoi(self):
+        de_thi_chon = random.choice(self.ds_de_thi)
         cua_so_bai_thi = tk.Toplevel(self.master)
         cua_so_bai_thi.title("Làm Trắc Nghiệm")
         cua_so_bai_thi.geometry("400x400")  # Set the size of the window
@@ -467,47 +467,40 @@ class Student:
 
         diem = 0
 
-        tk.Label(cua_so_bai_thi, text=f"Câu {cau_hoi_hien_tai + 1}: {de_thi_chon.cau_hoi}").pack()
+        tk.Label(cua_so_bai_thi, text=f"Câu {self.cau_hoi_hien_tai + 1}: {de_thi_chon.cau_hoi}").pack()
 
         # Create a list of StringVar variables for each question
-        vars_list = [tk.StringVar() for _ in range(4)]
+        var = tk.StringVar()
 
         for j, dap_an in enumerate(de_thi_chon.dap_an):
-            radiobutton = tk.Radiobutton(cua_so_bai_thi, text=dap_an, variable=vars_list[j], value=j)
-            radiobutton.pack()
+            tk.Radiobutton(cua_so_bai_thi, text=dap_an, variable=var, value=j).pack()
 
         btn_xac_nhan = tk.Button(cua_so_bai_thi, text="Xác Nhận",
-                                 command=lambda: self.kiem_tra_dap_an(cau_hoi_hien_tai, vars_list, de_thi_chon,
-                                                                       cua_so_bai_thi, diem))
+                                 command=lambda: self.kiem_tra_dap_an(var, de_thi_chon, cua_so_bai_thi, diem,
+                                                                      self.cau_hoi_hien_tai))
+
         btn_xac_nhan.pack()
+        self.cau_hoi_hien_tai += 1
 
-        if cau_hoi_hien_tai < 8:  # Hide "Câu Tiếp Theo" button for the last question
-            btn_tiep_theo = tk.Button(cua_so_bai_thi, text="Câu Tiếp Theo",
-                                      command=lambda: self.hien_thi_cau_hoi(cau_hoi_hien_tai + 1, de_thi_chon))
-            btn_tiep_theo.pack()
-
-    def kiem_tra_dap_an(self, cau_hoi_hien_tai, vars_list, de_thi_chon, cua_so_bai_thi, diem):
+    def kiem_tra_dap_an(self, var, de_thi_chon, cua_so_bai_thi, diem, cau_hoi_hien_tai):
         if 0 <= cau_hoi_hien_tai < len(de_thi_chon.dap_an_dung):
             dap_an_dung = de_thi_chon.dap_an_dung[cau_hoi_hien_tai]
         else:
             dap_an_dung = None
-        dap_an_nguoi_dung_str = vars_list[0].get()
-        if dap_an_nguoi_dung_str.isdigit():
-            dap_an_nguoi_dung = vars_list[int(dap_an_nguoi_dung_str)].get()
-        else:
-        # Xử lý khi giá trị không phải là số
-            dap_an_nguoi_dung = None
 
-        if dap_an_nguoi_dung is not None and dap_an_nguoi_dung == dap_an_dung:
+        dap_an_nguoi_dung = var.get()
+
+        if dap_an_nguoi_dung == dap_an_dung:
             diem += 1
 
-        if cau_hoi_hien_tai < 8:  # Move to the next question
+        if cau_hoi_hien_tai <= 9:  # Move to the next question
             cua_so_bai_thi.destroy()
-            self.hien_thi_cau_hoi(cau_hoi_hien_tai + 1, de_thi_chon)
+            self.hien_thi_cau_hoi()
         else:
             # Display the final score
             messagebox.showinfo("Kết Thúc", f"Điểm của bạn: {diem}")
             cua_so_bai_thi.destroy()
+
 
 class DeThi:
     def __init__(self, ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung):
