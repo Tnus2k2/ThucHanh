@@ -350,35 +350,31 @@ class Teacher:
         return SharedData.student_accounts
 
     def choose_csv_exam_file(self):
-        # Hiển thị hộp thoại lựa chọn tệp
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
-        file_De = "DE.csv"
+        try:
+            # Đọc thông tin đề từ file CSV
+            df_de_thi = pd.read_csv("DE.csv", encoding='latin-1', engine='python')
+            # Lọc các câu hỏi có mã đề trùng với mã đề của sinh viên
+            # Lặp qua từng dòng trong DataFrame và thêm vào danh sách đề
+            self.exam_list = []
+            for index, row in df_de_thi.iterrows():
+                ma_de = row['Ma_De']
+                ten_de = row['Ten_De']
+                cau_hoi = row['Cau_Hoi']
+                dap_an_A = row['Dap_An_A']
+                dap_an_B = row['Dap_An_B']
+                dap_an_C = row['Dap_An_C']
+                dap_an_D = row['Dap_An_D']
+                dap_an_dung = row['Dap_An_Dung']
 
-        if file_path:
-            try:
-                # Đọc thông tin đề từ file CSV
-                df_exam = pd.read_csv(file_De, encoding='latin-1', engine='python')
-
-                # Lặp qua từng dòng trong DataFrame và thêm vào danh sách đề
-                for index, row in df_exam.iterrows():
-                    ma_de = row['Ma_De']
-                    ten_de = row['Ten_De']
-                    cau_hoi = row['Cau_Hoi']
-                    dap_an_A = row['Dap_An_A']
-                    dap_an_B = row['Dap_An_B']
-                    dap_an_C = row['Dap_An_C']
-                    dap_an_D = row['Dap_An_D']
-                    dap_an_dung = row['Dap_An_Dung']
-
-                    exam = DeThi(ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung)
-                    self.exam_list.append(exam)
-
-                # Hiển thị thông báo khi danh sách đề được thêm thành công
-                messagebox.showinfo("Thông Báo", "Thêm Danh Sách Đề từ file CSV thành công!")
-            except FileNotFoundError:
-                messagebox.showerror("Lỗi", "File CSV không tồn tại.")
-            except Exception as e:
-                messagebox.showerror("Lỗi", f"Có lỗi xảy ra: {e}")
+                de_thi = DeThi(ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung)
+                self.exam_list.append(de_thi)
+            messagebox.showinfo("Thông báo", "Đã tải danh sách đề thi thành công.")
+            print(self.exam_list)
+        except FileNotFoundError:
+            messagebox.showerror("Lỗi", "File DE.csv không tồn tại.")
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Có lỗi xảy ra khi đọc file DE.csv: {e}")
 
     def show_info(self):
         # Tạo một cửa sổ mới để hiển thị thông tin sinh viên và đề
@@ -444,7 +440,7 @@ class Student:
 
                 de_thi = DeThi(ma_de, ten_de, cau_hoi, dap_an_A, dap_an_B, dap_an_C, dap_an_D, dap_an_dung)
                 self.ds_de_thi.append(de_thi)
-
+            print(self.ds_de_thi)
             messagebox.showinfo("Thông báo", "Đã tải danh sách đề thi thành công.")
             print(self.ds_de_thi)
         except FileNotFoundError:
@@ -509,7 +505,7 @@ class DeThi:
         self.dap_an_B = dap_an_B
         self.dap_an_C = dap_an_C
         self.dap_an_D = dap_an_D
-        self.dap_an_dung = [d['dap_an_dung'] for d in dap_an_dung]
+        self.dap_an_dung = [d for d in dap_an_dung]
 
 def update_score():
     pass
