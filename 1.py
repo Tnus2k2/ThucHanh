@@ -106,12 +106,12 @@ class NhậpMaTrận:
             for j in range(self.cột):
                 nhãn = tk.Label(self.khung_đầu_vào, text=f"({i+1}, {j+1}):")
                 đầu_vào = tk.Entry(self.khung_đầu_vào)
-                nhãn.grid(row=i, column=j * 2, padx=5, pady=5)
-                đầu_vào.grid(row=i, column=j * 2 + 1, padx=5, pady=5)
+                nhãn.pack(row=i, column=j * 2, padx=5, pady=5)
+                đầu_vào.pack(row=i, column=j * 2 + 1, padx=5, pady=5)
                 self.lưới_đầu_vào[i][j] = đầu_vào
 
         nút_gửi = tk.Button(self.khung_đầu_vào, text="Gửi", command=self.gửi_ma_trận)
-        nút_gửi.grid(row=self.hàng, columnspan=self.cột * 2, pady=10)
+        nút_gửi.pack(row=self.hàng, columnspan=self.cột * 2, pady=10)
 
     def gửi_ma_trận(self):
         for i in range(self.hàng):

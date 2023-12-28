@@ -11,31 +11,31 @@ class ChươngTrìnhToánHọcBiểuThức:
     def tạo_giao_diện(self):
         # Nhập Ký Hiệu
         nhãn_ký_hiệu = ttk.Label(self.root, text="Nhập ký hiệu biểu thức (ví dụ: 'x'): ")
-        nhãn_ký_hiệu.grid(row=0, column=0, sticky=tk.W, padx=10, pady=5)
+        nhãn_ký_hiệu.pack(row=0, column=0, sticky=tk.W, padx=10, pady=5)
         self.ô_nhập_ký_hiệu = ttk.Entry(self.root)
-        self.ô_nhập_ký_hiệu.grid(row=0, column=1, padx=10, pady=5)
+        self.ô_nhập_ký_hiệu.pack(row=0, column=1, padx=10, pady=5)
 
         # Nhập Biểu Thức
         nhãn_biểu_thức = ttk.Label(self.root, text="Nhập biểu thức toán học: ")
-        nhãn_biểu_thức.grid(row=1, column=0, sticky=tk.W, padx=10, pady=5)
+        nhãn_biểu_thức.pack(row=1, column=0, sticky=tk.W, padx=10, pady=5)
         self.ô_nhập_biểu_thức = ttk.Entry(self.root)
-        self.ô_nhập_biểu_thức.grid(row=1, column=1, padx=10, pady=5)
+        self.ô_nhập_biểu_thức.pack(row=1, column=1, padx=10, pady=5)
 
         # Lựa Chọn Phép Toán
         nhãn_phép_toán = ttk.Label(self.root, text="Chọn phép toán:")
-        nhãn_phép_toán.grid(row=2, column=0, sticky=tk.W, padx=10, pady=5)
+        nhãn_phép_toán.pack(row=2, column=0, sticky=tk.W, padx=10, pady=5)
         self.combobox_phép_toán = ttk.Combobox(self.root, values=["Đạo Hàm", "Tích Phân", "Tích Phân Xác Định", "Giới Hạn", "Giải Phương Trình"])
-        self.combobox_phép_toán.grid(row=2, column=1, padx=10, pady=5)
+        self.combobox_phép_toán.pack(row=2, column=1, padx=10, pady=5)
 
         # Kết Quả
         nhãn_kết_quả = ttk.Label(self.root, text="Kết quả:")
-        nhãn_kết_quả.grid(row=3, column=0, sticky=tk.W, padx=10, pady=5)
+        nhãn_kết_quả.pack(row=3, column=0, sticky=tk.W, padx=10, pady=5)
         self.vùng_hiển_thị_kết_quả = tk.Text(self.root, height=4, width=50)
-        self.vùng_hiển_thị_kết_quả.grid(row=3, column=1, padx=10, pady=5)
+        self.vùng_hiển_thị_kết_quả.pack(row=3, column=1, padx=10, pady=5)
 
         # Nút Tính Toán
         nút_tính_toán = ttk.Button(self.root, text="Tính Toán", command=self.tính_toán)
-        nút_tính_toán.grid(row=4, column=0, columnspan=2, pady=10)
+        nút_tính_toán.pack(row=4, column=0, columnspan=2, pady=10)
 
     def tính_toán(self):
         ký_hiệu = self.ô_nhập_ký_hiệu.get()
