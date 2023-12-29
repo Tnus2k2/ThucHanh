@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog, simpledialog, Tk, Label, Entry, Button
+from tkinter import messagebox, filedialog
 import pandas as pd
 import random
 from PIL import Image, ImageTk
@@ -416,7 +416,8 @@ class Student:
         self.de_thi_chon = None
         self.var = tk.StringVar()
         self.cau_hoi_hien_tai = 0
-
+        self.diem = 0
+        self.dap_an_nguoi_dung_str = None
         self.btn_chon_de_thi = tk.Button(master, text="Chọn File Đề", command=self.load_ds_de_thi)
         self.btn_chon_de_thi.pack(pady=10)
 
@@ -465,8 +466,6 @@ class Student:
 
         tk.Label(cua_so_bai_thi, text=f"Đề: {de_thi_chon.ten_de}").pack()
 
-        diem = 0
-
         tk.Label(cua_so_bai_thi, text=f"Câu {self.cau_hoi_hien_tai + 1}: {de_thi_chon.cau_hoi}").pack()
 
         # Create a list of StringVar variables for each question
@@ -476,29 +475,36 @@ class Student:
             tk.Radiobutton(cua_so_bai_thi, text=dap_an, variable=var, value=j).pack()
 
         btn_xac_nhan = tk.Button(cua_so_bai_thi, text="Xác Nhận",
-                                 command=lambda: self.kiem_tra_dap_an(var, de_thi_chon, cua_so_bai_thi, diem,
-                                                                      self.cau_hoi_hien_tai))
+                                 command=lambda: self.kiem_tra_dap_an(var, de_thi_chon, cua_so_bai_thi))
 
         btn_xac_nhan.pack()
         self.cau_hoi_hien_tai += 1
 
-    def kiem_tra_dap_an(self, var, de_thi_chon, cua_so_bai_thi, diem, cau_hoi_hien_tai):
-        if 0 <= cau_hoi_hien_tai < len(de_thi_chon.dap_an_dung):
-            dap_an_dung = de_thi_chon.dap_an_dung[cau_hoi_hien_tai]
+    def kiem_tra_dap_an(self, var, de_thi_chon, cua_so_bai_thi):
+        if 0 <= self.cau_hoi_hien_tai < len(de_thi_chon.dap_an_dung):
+            dap_an_dung = de_thi_chon.dap_an_dung[self.cau_hoi_hien_tai]
+
         else:
             dap_an_dung = None
-
         dap_an_nguoi_dung = var.get()
+        print(dap_an_nguoi_dung)
+        if dap_an_nguoi_dung == 0:
+            self.dap_an_nguoi_dung_str = "A"
+        if dap_an_nguoi_dung == 1:
+            self.dap_an_nguoi_dung_str = "B"
+        if dap_an_nguoi_dung == 2:
+            self.dap_an_nguoi_dung_str = "C"
+        if dap_an_nguoi_dung == 3:
+            self.dap_an_nguoi_dung_str = "D"
+        if self.dap_an_nguoi_dung_str == dap_an_dung:  # Chuyển dap_an_dung sang chuỗi để so sánh
+            self.diem += 1
 
-        if dap_an_nguoi_dung == dap_an_dung:
-            diem += 1
-
-        if cau_hoi_hien_tai <= 9:  # Move to the next question
+        if self.cau_hoi_hien_tai < 9:  # Move to the next question
             cua_so_bai_thi.destroy()
             self.hien_thi_cau_hoi()
         else:
             # Display the final score
-            messagebox.showinfo("Kết Thúc", f"Điểm của bạn: {diem}")
+            messagebox.showinfo("Kết Thúc", f"Điểm của bạn: {self.diem}")
             cua_so_bai_thi.destroy()
 
 
